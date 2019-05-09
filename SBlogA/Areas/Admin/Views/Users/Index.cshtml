@@ -1,0 +1,77 @@
+﻿@model SBlogA.Areas.Admin.ViewModels.UsersIndex
+<div id="message"></div>
+<div class="btn-toolbar">
+    <a href="@Url.Action("new")" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-plus"></i>Create User</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr id="tr_@user.Id">
+                <td>@user.Id</td>
+                <td>@user.Username</td>
+                <td>@user.Email</td>
+                <td>@String.Join(", ",user.Roles.Select(p=> p.Name))</td>
+                <td>
+                    <div class="btn-group">
+                        <a href="@Url.Action("edit",new { user.Id })" class="btn btn-xs btn-primary">
+                            <i class="glyphicon glyphicon-edit"></i>
+                            Edit
+                        </a>
+                        <a href="@Url.Action("resetpassword",new { user.Id })" class="btn btn-xs btn-primary">
+                            <i class="glyphicon glyphicon-lock"></i>
+                            Reset Password
+                        </a>
+                        <a class="btn btn-xs btn-primary" onclick="KullaniciSil(@user.Id)">
+                            <i class="glyphicon glyphicon-remove"></i>
+                            Delete
+                        </a>
+
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+<h2>Users</h2>
+
+@foreach (var user in Model.Users)
+{
+    <li>@user.Username</li>
+}
+@section scripts {
+    <script>
+        function KullaniciSil(KullaniciID) {
+            if (confirm("Kullanıcı Silinsin mi ?")) {
+
+        $.ajax({
+        type: "POST",
+                    url: "/Admin/Users/Delete",
+                    data: { id: KullaniciID },
+                    success: function (data) {
+                        if (data == "True") {
+                            $("#tr_" + KullaniciID).remove();
+                           alert(KullaniciID+" numaralı Id başarıyla silindi...");
+        $("#message").append("<div class='alert alert-info'><strong></strong>Kayıt başarıyla silindi </div>")
+                        }
+                        else {
+                           // $("#message").append("<div class='alert alert-info'><strong></strong>" + result.mesaj + " </div>")
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+
+}
